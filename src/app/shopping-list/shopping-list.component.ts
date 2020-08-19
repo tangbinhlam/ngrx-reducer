@@ -4,7 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Ingredient } from '../shared/ingredient.model';
 import { StartEdit } from './store/shopping-list.actions';
-import { AppState } from './store/shopping-list.reducer';
+import * as fromApp from '../store/app.reducer';
 
 @Component({
   selector: 'app-shopping-list',
@@ -15,7 +15,7 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
   ingredients$: Observable<Ingredient[]>;
   private subscription: Subscription;
 
-  constructor(private store: Store<AppState>) {}
+  constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
     this.ingredients$ = this.store

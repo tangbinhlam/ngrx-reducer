@@ -9,7 +9,7 @@ import {
   StopEdit,
   UpdateIngredient,
 } from '../store/shopping-list.actions';
-import { AppState } from '../store/shopping-list.reducer';
+import * as fromApp from 'src/app/store/app.reducer';
 
 @Component({
   selector: 'app-shopping-edit',
@@ -21,7 +21,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   editMode = false;
 
-  constructor(private store: Store<AppState>) {}
+  constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
     this.subscription = this.store
