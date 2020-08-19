@@ -29,11 +29,9 @@ export function shoppingListReducer(
     case ShoppingListAction.DELETE_INGREDIENT:
       return {
         ...state,
-        ingredients: [
-          state.ingredients.filter(
-            (ingredient, index) => index !== action.payload,
-          ),
-        ],
+        ingredients: state.ingredients.filter(
+          (ingredient, index) => index !== action.payload,
+        ),
       };
     case ShoppingListAction.ADD_INGREDIENTS:
       return {
