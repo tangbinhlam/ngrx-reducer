@@ -10,6 +10,7 @@ import {
   DeleteIngredient,
 } from '../store/shopping-list.actions';
 import { switchMap, map } from 'rxjs/operators';
+import { State, AppState } from '../store/shopping-list.reducer';
 
 @Component({
   selector: 'app-shopping-edit',
@@ -25,7 +26,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
   constructor(
     private slService: ShoppingListService,
-    private store: Store<{ shoppingList: { ingredients: Ingredient[] } }>,
+    private store: Store<AppState>,
   ) {}
 
   ngOnInit() {
