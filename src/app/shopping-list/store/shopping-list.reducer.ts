@@ -50,6 +50,18 @@ export function shoppingListReducer(
         ...state,
         ingredients: [...state.ingredients, ...action.payload],
       };
+    case ShoppingListAction.START_EIDT:
+      return {
+        ...state,
+        editedIngredientIndex: action.payload,
+        editedIngredient: { ...state.ingredients[action.payload] },
+      };
+    case ShoppingListAction.STOP_EDIT:
+      return {
+        ...state,
+        editedIngredientIndex: -1,
+        editedIngredient: null,
+      };
     default:
       return state;
   }
@@ -59,4 +71,6 @@ export type ShoppingListActions =
   | ShoppingListAction.AddIngredient
   | ShoppingListAction.UpdateIngredient
   | ShoppingListAction.DeleteIngredient
-  | ShoppingListAction.AddIngredients;
+  | ShoppingListAction.AddIngredients
+  | ShoppingListAction.StartEdit
+  | ShoppingListAction.StopEdit;
