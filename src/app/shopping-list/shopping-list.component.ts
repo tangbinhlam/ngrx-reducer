@@ -11,9 +11,8 @@ import * as fromApp from '../store/app.reducer';
   templateUrl: './shopping-list.component.html',
   styleUrls: ['./shopping-list.component.css'],
 })
-export class ShoppingListComponent implements OnInit, OnDestroy {
+export class ShoppingListComponent implements OnInit {
   ingredients$: Observable<Ingredient[]>;
-  private subscription: Subscription;
 
   constructor(private store: Store<fromApp.AppState>) {}
 
@@ -25,9 +24,5 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
 
   onEditItem(index: number) {
     this.store.dispatch(new StartEdit(index));
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
   }
 }
