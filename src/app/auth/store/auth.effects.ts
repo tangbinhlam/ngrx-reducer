@@ -1,13 +1,13 @@
-import { Actions, ofType, Effect } from '@ngrx/effects';
-import { switchMap, catchError, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-
-import { environment } from 'src/environments/environment';
-import * as AuthActions from './auth.actions';
-import { AuthResponseData } from '../auth.service';
-import { of } from 'rxjs';
-import { User } from '../user.model';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { of } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+import { AuthResponseData } from '../auth.service';
+import { User } from '../user.model';
+import * as AuthActions from './auth.actions';
 
 @Injectable()
 export class AuthEffects {
@@ -30,13 +30,12 @@ export class AuthEffects {
             const expirationDate = new Date(
               new Date().getTime() + +resData.expiresIn * 1000,
             );
-            const user = new User(
-              resData.email,
-              resData.localId,
-              resData.idToken,
+            return new AuthActions.Login({
+              email: resData.email,
+              userId: resData.localId,
+              token: resData.idToken,
               expirationDate,
-            );
-            return of(new AuthActions.Login(user));
+            });
           }),
           catchError((error) => {
             return of();
@@ -44,5 +43,17 @@ export class AuthEffects {
         );
     }),
   );
-  constructor(private actions$: Actions, private http: HttpClient) {}
+
+  @Effect({ dispatch: false })
+  authSuccess = this.actions$.pipe(
+    ofType(AuthActions.LOGIN),
+    tap(() => {
+      this.router.navigate(['/recipes']);
+    }),
+  );
+  constructor(
+    private actions$: Actions,
+    private http: HttpClient,
+    private router: Router,
+  ) {}
 }

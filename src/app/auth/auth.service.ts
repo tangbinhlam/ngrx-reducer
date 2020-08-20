@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError, tap } from 'rxjs/operators';
-import { throwError, BehaviorSubject } from 'rxjs';
+import { throwError } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { environment } from '../../environments/environment';
@@ -90,15 +90,15 @@ export class AuthService {
       return;
     }
 
-    const loadedUser = new User(
-      userData.email,
-      userData.id,
-      userData._token,
-      new Date(userData._tokenExpirationDate),
-    );
-
-    if (loadedUser.token) {
-      this.store.dispatch(new Login(loadedUser));
+    if (userData._token) {
+      this.store.dispatch(
+        new Login({
+          email: userData.email,
+          userId: userData.id,
+          token: userData._token,
+          expirationDate: new Date(userData._tokenExpirationDate),
+        }),
+      );
       // this.user.next(loadedUser);
       const expirationDuration =
         new Date(userData._tokenExpirationDate).getTime() -
@@ -132,8 +132,7 @@ export class AuthService {
   ) {
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
     const user = new User(email, userId, token, expirationDate);
-    this.store.dispatch(new Login(user));
-    //this.user.next(user);
+    this.store.dispatch(new Login({ email, userId, token, expirationDate }));
     this.autoLogout(expiresIn * 1000);
     localStorage.setItem('userData', JSON.stringify(user));
   }
