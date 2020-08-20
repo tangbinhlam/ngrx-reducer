@@ -11,6 +11,8 @@ import { HeaderComponent } from './header/header.component';
 import { SharedModule } from './shared/shared.module';
 import { appReducer } from './store/app.reducer';
 import { environment } from 'src/environments/environment';
+import { EffectsModule } from '@ngrx/effects';
+import { AuthEffects } from './auth/store/auth.effects';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -21,6 +23,7 @@ import { environment } from 'src/environments/environment';
     SharedModule,
     CoreModule,
     StoreModule.forRoot(appReducer),
+    EffectsModule.forRoot([AuthEffects]),
     !environment.production ? fromDevTool.StoreDevtoolsModule.instrument() : [],
   ],
   bootstrap: [AppComponent],

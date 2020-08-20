@@ -6,8 +6,8 @@ export const UPDATE_INGREDIENT = '[Shopping list] Update Ingredient';
 export const DELETE_INGREDIENT = '[Shopping list] Delete Ingredient';
 export const ADD_INGREDIENTS = '[Shopping list] Add Ingredients';
 
-export const START_EIDT = 'START_EIDT';
-export const STOP_EDIT = 'STOP_EDIT';
+export const START_EIDT = '[Shopping list] start edit';
+export const STOP_EDIT = '[Shopping list] stop edit';
 
 export class StartEdit implements Action {
   readonly type = START_EIDT;
