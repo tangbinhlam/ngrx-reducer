@@ -1,6 +1,5 @@
 import { User } from '../user.model';
 import * as fromAuthActions from './auth.actions';
-import { act } from '@ngrx/effects';
 export interface State {
   user: User;
   authMessage: string;

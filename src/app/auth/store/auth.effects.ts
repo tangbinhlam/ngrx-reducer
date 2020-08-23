@@ -6,7 +6,6 @@ import { of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { AuthResponseData } from '../auth.service';
-import { User } from '../user.model';
 import * as AuthActions from './auth.actions';
 
 @Injectable()
