@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { AuthResponseData } from '../auth.service';
+import { User } from '../user.model';
 import * as AuthActions from './auth.actions';
 
 @Injectable()
@@ -36,8 +37,8 @@ export class AuthEffects {
               expirationDate,
             });
           }),
-          catchError((error) => {
-            return of();
+          catchError((error: HttpErrorResponse) => {
+            return this.handleError(error);
           }),
         );
     }),
@@ -55,4 +56,23 @@ export class AuthEffects {
     private http: HttpClient,
     private router: Router,
   ) {}
+
+  private handleError(errorRes: HttpErrorResponse) {
+    let errorMessage = 'An unknown error occurred!';
+    if (!errorRes.error || !errorRes.error.error) {
+      return of(new AuthActions.LoginFail(errorMessage));
+    }
+    switch (errorRes.error.error.message) {
+      case 'EMAIL_EXISTS':
+        errorMessage = 'This email exists already';
+        break;
+      case 'EMAIL_NOT_FOUND':
+        errorMessage = 'This email does not exist.';
+        break;
+      case 'INVALID_PASSWORD':
+        errorMessage = 'This password is not correct.';
+        break;
+    }
+    return of(new AuthActions.LoginFail(errorMessage));
+  }
 }

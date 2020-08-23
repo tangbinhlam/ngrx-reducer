@@ -40,10 +40,7 @@ export class AuthComponent implements OnInit, OnDestroy {
     this.store.select('auth').subscribe((authData) => {
       this.isLoading = authData.loading;
       this.error = authData.authMessage;
-      if (authData.user) {
-        this.isLoading = false;
-        this.router.navigate(['/recipes']);
-      } else {
+      if (this.error) {
         this.showErrorAlert(this.error);
         this.isLoading = false;
       }
