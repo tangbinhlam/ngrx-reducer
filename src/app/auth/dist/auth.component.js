@@ -12,22 +12,18 @@ var alert_component_1 = require("../shared/alert/alert.component");
 var placeholder_directive_1 = require("../shared/placeholder/placeholder.directive");
 var AuthActions = require("./store/auth.actions");
 var AuthComponent = /** @class */ (function () {
-    function AuthComponent(authService, router, componentFactoryResolver, store) {
-        this.authService = authService;
-        this.router = router;
+    function AuthComponent(componentFactoryResolver, store) {
         this.componentFactoryResolver = componentFactoryResolver;
         this.store = store;
         this.isLoginMode = true;
         this.isLoading = false;
-        this.error = null;
     }
     AuthComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.store.select('auth').subscribe(function (authData) {
             _this.isLoading = authData.loading;
-            _this.error = authData.authMessage;
-            if (_this.error) {
-                _this.showErrorAlert(_this.error);
+            if (authData.authMessage) {
+                _this.showErrorAlert(authData.authMessage);
                 _this.isLoading = false;
             }
         });
@@ -41,7 +37,6 @@ var AuthComponent = /** @class */ (function () {
         }
         var email = form.value.email;
         var password = form.value.password;
-        var authObs;
         this.isLoading = true;
         if (this.isLoginMode) {
             this.store.dispatch(new AuthActions.LoginStart({ email: email, password: password }));
@@ -52,7 +47,7 @@ var AuthComponent = /** @class */ (function () {
         form.reset();
     };
     AuthComponent.prototype.onHandleError = function () {
-        this.error = null;
+        this.store.dispatch(new AuthActions.ClearError());
     };
     AuthComponent.prototype.ngOnDestroy = function () {
         if (this.closeSub) {

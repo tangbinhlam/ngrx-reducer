@@ -1,16 +1,14 @@
 import {
   Component,
   ComponentFactoryResolver,
-  ViewChild,
   OnDestroy,
   OnInit,
+  ViewChild,
 } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
 
-import { AuthService, AuthResponseData } from './auth.service';
 import { AlertComponent } from '../shared/alert/alert.component';
 import { PlaceholderDirective } from '../shared/placeholder/placeholder.directive';
 import * as formApp from '../store/app.reducer';
@@ -23,15 +21,12 @@ import * as AuthActions from './store/auth.actions';
 export class AuthComponent implements OnInit, OnDestroy {
   isLoginMode = true;
   isLoading = false;
-  error: string = null;
   @ViewChild(PlaceholderDirective, { static: false })
   alertHost: PlaceholderDirective;
 
   private closeSub: Subscription;
 
   constructor(
-    private authService: AuthService,
-    private router: Router,
     private componentFactoryResolver: ComponentFactoryResolver,
     private store: Store<formApp.AppState>,
   ) {}
@@ -39,9 +34,8 @@ export class AuthComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.store.select('auth').subscribe((authData) => {
       this.isLoading = authData.loading;
-      this.error = authData.authMessage;
-      if (this.error) {
-        this.showErrorAlert(this.error);
+      if (authData.authMessage) {
+        this.showErrorAlert(authData.authMessage);
         this.isLoading = false;
       }
     });
@@ -58,8 +52,6 @@ export class AuthComponent implements OnInit, OnDestroy {
     const email = form.value.email;
     const password = form.value.password;
 
-    let authObs: Observable<AuthResponseData>;
-
     this.isLoading = true;
 
     if (this.isLoginMode) {
@@ -72,7 +64,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   onHandleError() {
-    this.error = null;
+    this.store.dispatch(new AuthActions.ClearError());
   }
 
   ngOnDestroy() {

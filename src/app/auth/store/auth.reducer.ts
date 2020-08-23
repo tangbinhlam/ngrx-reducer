@@ -35,6 +35,7 @@ export function authReducer(
         user: null,
       };
     case fromAuthActions.LOGIN_START:
+    case fromAuthActions.SIGN_UP:
       return {
         ...state,
         authMessage: null,
@@ -46,6 +47,11 @@ export function authReducer(
         user: null,
         authMessage: action.payload,
         loading: false,
+      };
+    case fromAuthActions.CLEAR_ERROR:
+      return {
+        ...state,
+        authMessage: null,
       };
     default:
       return state;
