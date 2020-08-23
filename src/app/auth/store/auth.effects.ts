@@ -6,11 +6,33 @@ import { of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { AuthResponseData } from '../auth.service';
-import { User } from '../user.model';
 import * as AuthActions from './auth.actions';
 
 @Injectable()
 export class AuthEffects {
+  @Effect()
+  authSignup = this.actions$.pipe(
+    ofType(AuthActions.SIGN_UP),
+    switchMap((authData: AuthActions.Signup) => {
+      return this.http
+        .post<AuthResponseData>(
+          'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=' +
+            environment.firebaseAPIKey,
+          {
+            email: authData.payload.email,
+            password: authData.payload.password,
+            returnSecureToken: true,
+          },
+        )
+        .pipe(
+          map((resData: AuthResponseData) => {
+            return this.handleAuthentication(resData);
+          }),
+          catchError(this.handleError),
+        );
+    }),
+  );
+
   @Effect()
   authLogin = this.actions$.pipe(
     ofType(AuthActions.LOGIN_START),
@@ -27,19 +49,9 @@ export class AuthEffects {
         )
         .pipe(
           map((resData: AuthResponseData) => {
-            const expirationDate = new Date(
-              new Date().getTime() + +resData.expiresIn * 1000,
-            );
-            return new AuthActions.Login({
-              email: resData.email,
-              userId: resData.localId,
-              token: resData.idToken,
-              expirationDate,
-            });
+            return this.handleAuthentication(resData);
           }),
-          catchError((error: HttpErrorResponse) => {
-            return this.handleError(error);
-          }),
+          catchError(this.handleError),
         );
     }),
   );
@@ -56,6 +68,18 @@ export class AuthEffects {
     private http: HttpClient,
     private router: Router,
   ) {}
+
+  private handleAuthentication(resData: AuthResponseData) {
+    const expirationDate = new Date(
+      new Date().getTime() + +resData.expiresIn * 1000,
+    );
+    return new AuthActions.Login({
+      email: resData.email,
+      userId: resData.localId,
+      token: resData.idToken,
+      expirationDate,
+    });
+  }
 
   private handleError(errorRes: HttpErrorResponse) {
     let errorMessage = 'An unknown error occurred!';

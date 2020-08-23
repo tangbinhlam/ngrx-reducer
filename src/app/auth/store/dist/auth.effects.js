@@ -19,6 +19,18 @@ var AuthEffects = /** @class */ (function () {
         this.actions$ = actions$;
         this.http = http;
         this.router = router;
+        this.authSignup = this.actions$.pipe(effects_1.ofType(AuthActions.SIGN_UP), operators_1.switchMap(function (authData) {
+            return _this.http
+                .post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=' +
+                environment_1.environment.firebaseAPIKey, {
+                email: authData.payload.email,
+                password: authData.payload.password,
+                returnSecureToken: true
+            })
+                .pipe(operators_1.map(function (resData) {
+                return _this.handleAuthentication(resData);
+            }), operators_1.catchError(_this.handleError));
+        }));
         this.authLogin = this.actions$.pipe(effects_1.ofType(AuthActions.LOGIN_START), operators_1.switchMap(function (authData) {
             return _this.http
                 .post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' +
@@ -28,21 +40,22 @@ var AuthEffects = /** @class */ (function () {
                 returnSecureToken: true
             })
                 .pipe(operators_1.map(function (resData) {
-                var expirationDate = new Date(new Date().getTime() + +resData.expiresIn * 1000);
-                return new AuthActions.Login({
-                    email: resData.email,
-                    userId: resData.localId,
-                    token: resData.idToken,
-                    expirationDate: expirationDate
-                });
-            }), operators_1.catchError(function (error) {
-                return _this.handleError(error);
-            }));
+                return _this.handleAuthentication(resData);
+            }), operators_1.catchError(_this.handleError));
         }));
         this.authSuccess = this.actions$.pipe(effects_1.ofType(AuthActions.LOGIN), operators_1.tap(function () {
             _this.router.navigate(['/recipes']);
         }));
     }
+    AuthEffects.prototype.handleAuthentication = function (resData) {
+        var expirationDate = new Date(new Date().getTime() + +resData.expiresIn * 1000);
+        return new AuthActions.Login({
+            email: resData.email,
+            userId: resData.localId,
+            token: resData.idToken,
+            expirationDate: expirationDate
+        });
+    };
     AuthEffects.prototype.handleError = function (errorRes) {
         var errorMessage = 'An unknown error occurred!';
         if (!errorRes.error || !errorRes.error.error) {
@@ -61,6 +74,9 @@ var AuthEffects = /** @class */ (function () {
         }
         return rxjs_1.of(new AuthActions.LoginFail(errorMessage));
     };
+    __decorate([
+        effects_1.Effect()
+    ], AuthEffects.prototype, "authSignup");
     __decorate([
         effects_1.Effect()
     ], AuthEffects.prototype, "authLogin");
