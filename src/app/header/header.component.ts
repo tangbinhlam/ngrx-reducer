@@ -4,7 +4,6 @@ import { of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Logout } from '../auth/store/auth.actions';
 import * as fromRecipe from '../recipes/store/recipe.actions';
-import { DataStorageService } from '../shared/data-storage.service';
 import * as fromApp from '../store/app.reducer';
 
 @Component({
@@ -14,10 +13,7 @@ import * as fromApp from '../store/app.reducer';
 export class HeaderComponent implements OnInit {
   isAuthenticated$ = of(false);
 
-  constructor(
-    private dataStorageService: DataStorageService,
-    private store: Store<fromApp.AppState>,
-  ) {}
+  constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
     this.isAuthenticated$ = this.store.select('auth').pipe(
@@ -28,7 +24,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onSaveData() {
-    this.dataStorageService.storeRecipes();
+    this.store.dispatch(new fromRecipe.StoreRecipes());
   }
 
   onFetchData() {

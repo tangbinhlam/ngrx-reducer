@@ -22,6 +22,16 @@ export function recipeReducer(
         ...state,
         recipes: [...state.recipes, action.payload],
       };
+    case fromRecipeActions.UPDATE_RECIPE:
+      let recipesUpdated = [...state.recipes];
+      recipesUpdated[action.payload.index] = {
+        ...state.recipes[action.payload.index],
+        ...action.payload.recipe,
+      };
+      return {
+        ...state,
+        recipes: [...recipesUpdated],
+      };
     case fromRecipeActions.DELETE_RECIPE:
       return {
         ...state,

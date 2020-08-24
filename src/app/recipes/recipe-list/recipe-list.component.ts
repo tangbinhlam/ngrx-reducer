@@ -3,9 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 import * as fromApp from '../../store/app.reducer';
 import { Recipe } from '../recipe.model';
-import { RecipeService } from '../recipe.service';
 
 @Component({
   selector: 'app-recipe-list',
@@ -17,7 +17,6 @@ export class RecipeListComponent implements OnInit {
   subscription: Subscription;
 
   constructor(
-    private recipeService: RecipeService,
     private router: Router,
     private store: Store<fromApp.AppState>,
     private route: ActivatedRoute,

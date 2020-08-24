@@ -33,6 +33,7 @@ export class RecipeEditComponent implements OnInit {
     this.recipe$ = this.route.params.pipe(
       map((params) => +params['id']),
       switchMap((index) => {
+        this.id = index;
         return this.store
           .select('recipes')
           .pipe(map((recipesData) => recipesData.recipes[index]));
@@ -45,7 +46,12 @@ export class RecipeEditComponent implements OnInit {
 
   onSubmit() {
     if (this.editMode) {
-      this.store.dispatch(new fromRecipes.UpdateRecipe(this.recipeForm.value));
+      this.store.dispatch(
+        new fromRecipes.UpdateRecipe({
+          recipe: this.recipeForm.value,
+          index: this.id,
+        }),
+      );
     } else {
       this.store.dispatch(new fromRecipes.AddRecipe(this.recipeForm.value));
     }
